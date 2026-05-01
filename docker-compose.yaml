@@ -1,0 +1,37 @@
+services:
+  article-service-db:
+    container_name: article-service-db
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    volumes:
+      - article-service-data:/var/lib/postgresql/data
+    networks:
+      - article-service
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: article-service-dev
+    restart: always
+
+  article-mq:
+    container_name: article-mq
+    image: rabbitmq:management
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - article-mq-data:/var/lib/rabbitmq
+    networks:
+      - article-service
+
+volumes:
+  article-mq-data:
+  article-service-data:
+  
+networks:
+  article-service:
+    driver: bridge
