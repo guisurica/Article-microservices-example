@@ -1,4 +1,6 @@
-﻿using ArticleService.Infra.Database;
+﻿using ArticleService.Application.Contracts;
+using ArticleService.Infra.Database;
+using ArticleService.Infra.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +15,8 @@ public static class OrderServiceExtensions
         {
             opt.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
         });
+
+        service.AddTransient<IArticleRepository, ArticleRepository>();
 
         return service;
     }
