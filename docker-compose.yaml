@@ -14,6 +14,21 @@ services:
       POSTGRES_DB: article-service-dev
     restart: always
 
+  article-report-service-db:
+    container_name: article-report-service-db
+    image: postgres:16
+    ports:
+      - "5431:5432"
+    volumes:
+      - article-report-service-data:/var/lib/postgresql/data
+    networks:
+      - article-report-service
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: article-report-service-dev
+    restart: always
+
   article-mq:
     container_name: article-mq
     image: rabbitmq:management
@@ -31,7 +46,10 @@ services:
 volumes:
   article-mq-data:
   article-service-data:
+  article-report-service-data:
   
 networks:
   article-service:
+    driver: bridge
+  article-report-service:
     driver: bridge
