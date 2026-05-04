@@ -1,4 +1,8 @@
+using ArticleService.Application.Contracts.Usecases;
+using ArticleService.Application.DTOs;
+using ArticleService.Domain.Extensions;
 using ArticleService.Infra.Extensions;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddInfra(builder.Configuration);
+builder.Services.AddApplication();
 
 var app = builder.Build();
 
@@ -18,24 +23,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-var summaries = new[]
+app.MapPost("/create-article", async (
+    [FromBody] CreateArticleDTO input,
+    IUseCase<ArticleDTO, CreateArticleDTO> createArticleUseCase) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var articleCreated = await createArticleUseCase.HandleAsync(input);
+    if (!articleCreated.IsOkResult)
+        return Results.BadRequest(articleCreated.Message);
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    return Results.Ok(articleCreated.Data);
 })
-.WithName("GetWeatherForecast")
+.WithName("create-article")
 .WithOpenApi();
 
 app.Run();

@@ -6,4 +6,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\SharedService\SharedService.csproj" />
+    <ProjectReference Include="..\ArticleService.Domain\ArticleService.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

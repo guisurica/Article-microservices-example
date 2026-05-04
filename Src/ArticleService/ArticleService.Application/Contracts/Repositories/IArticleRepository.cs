@@ -1,7 +1,7 @@
 ﻿using ArticleService.Domain.Entities;
 using SharedService.Returns;
 
-namespace ArticleService.Application.Contracts;
+namespace ArticleService.Application.Contracts.Repositories;
 
 public interface IArticleRepository
 {

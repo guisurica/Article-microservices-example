@@ -1,4 +1,5 @@
 ﻿using ArticleService.Domain.Contracts;
+using SharedService.Returns;
 
 namespace ArticleService.Domain.Entities;
 
@@ -17,8 +18,8 @@ public sealed class Article : BaseEntity
         Tags = tags.Count() <= 0 ? new List<string> { "Default" } : tags;
     }
 
-    public static Article Builder(string title, string description, List<string>? tags)
+    public static Result<Article> Builder(string title, string description, List<string>? tags)
     {
-        return new Article(title, description, tags);
+        return Result<Article>.SuccessResult("Article created", new Article(title, description, tags));
     }
 }

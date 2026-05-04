@@ -1,8 +1,13 @@
-﻿using ArticleService.Application.Contracts;
+﻿using ArticleService.Application.Contracts.Repositories;
+using ArticleService.Domain.Contracts;
 using ArticleService.Domain.Entities;
+using ArticleService.Domain.Events;
 using ArticleService.Infra.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SharedService.Returns;
+using System.Security.Principal;
+using System.Text.Json;
 
 namespace ArticleService.Infra.Repositories;
 
@@ -20,6 +25,14 @@ internal sealed class ArticleRepository : IArticleRepository
         try
         {
             await _context.Set<Article>().AddAsync(article);
+
+            article.RaiseDomainEvent(new ArticleCreatedDomainEvent
+            {
+                Id = article.Id,
+                OcorredOnUtc = DateTime.UtcNow,
+                Content = JsonSerializer.Serialize(article)
+            });
+
             await _context.SaveChangesAsync();
 
             return Result<string>.SuccessResult("Article created successfully", 201);

@@ -1,1 +1,21 @@
-<Solution />
+<Solution>
+  <Folder Name="/Itens de Solução/">
+    <File Path="docker-compose.yaml" />
+  </Folder>
+  <Folder Name="/Src/" />
+  <Folder Name="/Src/ArticleReportService/">
+    <Project Path="Src/ArticleReportService/ArticleReportService.API/ArticleReportService.API.csproj" />
+    <Project Path="Src/ArticleReportService/ArticleReportService.Application/ArticleReportService.Application.csproj" />
+    <Project Path="Src/ArticleReportService/ArticleReportService.Domain/ArticleReportService.Domain.csproj" />
+    <Project Path="Src/ArticleReportService/ArticleReportService.Infra/ArticleReportService.Infra.csproj" />
+  </Folder>
+  <Folder Name="/Src/ArticleService/">
+    <Project Path="Src/ArticleService/ArticleService.API/ArticleService.API.csproj" />
+    <Project Path="Src/ArticleService/ArticleService.Application/ArticleService.Application.csproj" />
+    <Project Path="Src/ArticleService/ArticleService.Domain/ArticleService.Domain.csproj" />
+    <Project Path="Src/ArticleService/ArticleService.Infra/ArticleService.Infra.csproj" />
+  </Folder>
+  <Folder Name="/Src/Shared/">
+    <Project Path="Src/Shared/SharedService/SharedService.csproj" />
+  </Folder>
+</Solution>

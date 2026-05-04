@@ -28,6 +28,13 @@ public class Result<T>
     public static Result<T> SuccessResult(string message, int code, T data) =>
         new Result<T>(message, code, data, true);
 
+    public static Result<T> SuccessResult(T data) =>
+        new Result<T>(string.Empty, 201, data, true);
+
+    public static Result<T> SuccessResult(string message, T data) =>
+        new Result<T>(message, 201, data, true);
+
+
     public static Result<T> SuccessResult(string message, int code) =>
         new Result<T>(message, code, default(T), true);
 

@@ -1,6 +1,13 @@
-﻿using ArticleService.Application.Contracts;
+﻿using ArticleService.Application.Contracts.Repositories;
+using ArticleService.Domain.Contracts;
+using ArticleService.Domain.Events;
+using ArticleService.Infra.Configurations;
+using ArticleService.Infra.Contracts;
 using ArticleService.Infra.Database;
+using ArticleService.Infra.EventHandlers;
+using ArticleService.Infra.Messaging.RabbitMq;
 using ArticleService.Infra.Repositories;
+using ArticleService.Infra.Workers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +24,18 @@ public static class OrderServiceExtensions
         });
 
         service.AddTransient<IArticleRepository, ArticleRepository>();
+        service.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+
+        service.AddScoped<IDomainEventHandler<ArticleCreatedDomainEvent>, ArticleCreatedEventHandler>();
+        service.AddTransient<IOutboxMessageConsumer, OutboxMessagesConsumer>();
+
+        service.AddHostedService<OutboxMessageWorker>();
+
+        service.Configure<RabbitMqConfiguration>(opt => {
+            opt.Host = configuration["RabbitMqConfiguration:Host"];
+            opt.Username = configuration["RabbitMqConfiguration:Username"];
+            opt.Password = configuration["RabbitMqConfiguration:Password"];
+        });
 
         return service;
     }
