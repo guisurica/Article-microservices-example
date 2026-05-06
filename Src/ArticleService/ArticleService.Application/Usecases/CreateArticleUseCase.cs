@@ -3,11 +3,11 @@ using ArticleService.Application.Contracts.Usecases;
 using ArticleService.Application.DTOs;
 using ArticleService.Application.Mappers;
 using ArticleService.Application.Validators;
-using ArticleService.Domain.Contracts;
 using ArticleService.Domain.Entities;
 using ArticleService.Domain.Events;
 using FluentValidation;
 using FluentValidation.Results;
+using SharedService.Contracts;
 using SharedService.Returns;
 
 namespace ArticleService.Application.Usecases;

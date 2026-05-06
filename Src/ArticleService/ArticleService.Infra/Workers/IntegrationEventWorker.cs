@@ -1,14 +1,15 @@
-﻿using ArticleService.Infra.Contracts;
+﻿using ArticleService.Domain.Events;
+using ArticleService.Infra.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace ArticleService.Infra.Workers;
 
-public class OutboxMessageWorker : BackgroundService
+public class IntegrationEventWorker : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
 
-    public OutboxMessageWorker(IServiceProvider serviceProvider)
+    public IntegrationEventWorker(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
     }

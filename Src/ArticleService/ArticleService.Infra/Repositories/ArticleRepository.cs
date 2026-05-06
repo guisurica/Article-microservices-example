@@ -1,12 +1,9 @@
 ﻿using ArticleService.Application.Contracts.Repositories;
-using ArticleService.Domain.Contracts;
 using ArticleService.Domain.Entities;
 using ArticleService.Domain.Events;
 using ArticleService.Infra.Database;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SharedService.Returns;
-using System.Security.Principal;
 using System.Text.Json;
 
 namespace ArticleService.Infra.Repositories;
@@ -30,7 +27,8 @@ internal sealed class ArticleRepository : IArticleRepository
             {
                 Id = article.Id,
                 OcorredOnUtc = DateTime.UtcNow,
-                Content = JsonSerializer.Serialize(article)
+                Content = JsonSerializer.Serialize(article),
+                Type = nameof(ArticleCreatedDomainEvent)
             });
 
             await _context.SaveChangesAsync();

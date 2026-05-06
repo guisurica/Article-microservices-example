@@ -8,7 +8,6 @@ using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Channels;
 
 namespace ArticleService.Infra.Messaging.RabbitMq;
 public class OutboxMessagesConsumer : IOutboxMessageConsumer
@@ -19,8 +18,6 @@ public class OutboxMessagesConsumer : IOutboxMessageConsumer
     private IConnection _connection;
     private IChannel _channel;
     private ConnectionFactory factory;
-
-    private string DirectExchangeName = "direct_outbox_messages";
 
     public OutboxMessagesConsumer(OrderDatabaseContext context, IOptions<RabbitMqConfiguration> options)
     {
@@ -37,7 +34,7 @@ public class OutboxMessagesConsumer : IOutboxMessageConsumer
     }
 
 
-    private async Task<int> CreateRabbitMqConnections(ConnectionFactory factory)
+    public async Task<int> CreateRabbitMqConnections(ConnectionFactory factory)
     {
         try
         {
@@ -51,7 +48,7 @@ public class OutboxMessagesConsumer : IOutboxMessageConsumer
         }
     }
 
-    private async Task<int> DisposeRabbitMqConnections()
+    public async Task<int> DisposeRabbitMqConnections()
     {
         try
         {
@@ -82,21 +79,27 @@ public class OutboxMessagesConsumer : IOutboxMessageConsumer
         if (await CreateRabbitMqConnections(factory) == 1)
             return;
 
-        await _channel
-            .ExchangeDeclareAsync(exchange: DirectExchangeName, type: ExchangeType.Direct);
-        
-        foreach(Outbox message in OutboxMessages)
+        foreach (Outbox message in OutboxMessages)
         {
-            var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
+            await _channel.QueueDeclareAsync(queue: "Integration.Events", durable: true, exclusive: false, autoDelete: false,
+                arguments: new Dictionary<string, object?> { { "x-queue-type", "quorum" } });
+
+            var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message.Content));
+
+            var properties = new BasicProperties
+            {
+                Persistent = true
+            };
 
             await _channel
-                .BasicPublishAsync(exchange: DirectExchangeName, routingKey: DirectExchangeName, body: body);
+                .BasicPublishAsync(exchange: string.Empty, 
+                routingKey: message.Type, body: body, mandatory: true, basicProperties: properties);
 
-            //message.UpdateProcessedOnUtc();
-            
-            //_context.Set<Outbox>().Update(message);
+            message.UpdateProcessedOnUtc();
 
-            //await _context.SaveChangesAsync();
+            _context.Set<Outbox>().Update(message);
+
+            await _context.SaveChangesAsync();
         }
 
         await DisposeRabbitMqConnections();

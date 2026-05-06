@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualBasic;
-
-namespace SharedService.Entities;
+﻿namespace SharedService.Entities;
 
 public abstract class OutBoxEntity 
 { 

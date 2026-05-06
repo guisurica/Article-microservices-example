@@ -1,5 +1,5 @@
 ﻿using ArticleService.Application.Contracts.Repositories;
-using ArticleService.Domain.Contracts;
+using SharedService.Contracts;
 using ArticleService.Domain.Events;
 using ArticleService.Infra.Configurations;
 using ArticleService.Infra.Contracts;
@@ -29,7 +29,7 @@ public static class OrderServiceExtensions
         service.AddScoped<IDomainEventHandler<ArticleCreatedDomainEvent>, ArticleCreatedEventHandler>();
         service.AddTransient<IOutboxMessageConsumer, OutboxMessagesConsumer>();
 
-        service.AddHostedService<OutboxMessageWorker>();
+        service.AddHostedService<IntegrationEventWorker>();
 
         service.Configure<RabbitMqConfiguration>(opt => {
             opt.Host = configuration["RabbitMqConfiguration:Host"];

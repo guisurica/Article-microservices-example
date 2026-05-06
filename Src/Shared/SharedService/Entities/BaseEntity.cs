@@ -1,4 +1,6 @@
-﻿namespace ArticleService.Domain.Contracts;
+﻿using SharedService.Contracts;
+
+namespace SharedService.Entities;
 
 public abstract class BaseEntity
 {

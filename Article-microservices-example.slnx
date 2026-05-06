@@ -8,6 +8,7 @@
     <Project Path="Src/ArticleReportService/ArticleReportService.Application/ArticleReportService.Application.csproj" />
     <Project Path="Src/ArticleReportService/ArticleReportService.Domain/ArticleReportService.Domain.csproj" />
     <Project Path="Src/ArticleReportService/ArticleReportService.Infra/ArticleReportService.Infra.csproj" />
+    <Project Path="Src/ArticleReportService/Workers/ArticleCreatedWorkersConsumer/ArticleCreatedWorkersConsumer.csproj" Id="ea405d23-304a-434a-a2bd-d0e042a50c4d" />
   </Folder>
   <Folder Name="/Src/ArticleService/">
     <Project Path="Src/ArticleService/ArticleService.API/ArticleService.API.csproj" />

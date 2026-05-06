@@ -1,5 +1,5 @@
-﻿using ArticleService.Domain.Contracts;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SharedService.Contracts;
 
 namespace ArticleService.Infra.Contracts;
 

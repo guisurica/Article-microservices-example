@@ -1,5 +1,5 @@
-﻿using ArticleService.Domain.Contracts;
-using SharedService.Returns;
+﻿using SharedService.Returns;
+using SharedService.Entities;
 
 namespace ArticleService.Domain.Entities;
 

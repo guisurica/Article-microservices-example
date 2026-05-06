@@ -1,7 +1,7 @@
-﻿using ArticleService.Domain.Contracts;
-using ArticleService.Domain.Entities;
+﻿using ArticleService.Domain.Entities;
 using ArticleService.Domain.Events;
 using ArticleService.Infra.Database;
+using SharedService.Contracts;
 
 namespace ArticleService.Infra.EventHandlers;
 
@@ -16,7 +16,7 @@ public class ArticleCreatedEventHandler : IDomainEventHandler<ArticleCreatedDoma
 
     public async Task HandleAsync(ArticleCreatedDomainEvent domainEvent)
     {
-        var outbox = await _context.Set<Outbox>().AddAsync(new Outbox(domainEvent.Content));
+        var outbox = await _context.Set<Outbox>().AddAsync(new Outbox(domainEvent.Content, domainEvent.Type));
 
         await _context.SaveChangesAsync();
     }

@@ -1,4 +1,4 @@
-﻿namespace ArticleService.Domain.Contracts;
+﻿namespace SharedService.Contracts;
 
 public interface IDomainEventHandler<THandler> where THandler : IDomainEvent
 {
