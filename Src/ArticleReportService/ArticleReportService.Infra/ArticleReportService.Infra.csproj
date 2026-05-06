@@ -19,10 +19,10 @@
 
   <ItemGroup>
     <Folder Include="Contracts\" />
-    <Folder Include="Messaging\" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ArticleReportService.Application\ArticleReportService.Application.csproj" />
     <ProjectReference Include="..\ArticleReportService.Domain\ArticleReportService.Domain.csproj" />
   </ItemGroup>
 
