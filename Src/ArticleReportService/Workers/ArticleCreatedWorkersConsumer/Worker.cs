@@ -1,8 +1,10 @@
+using ArticleReportService.Application.Contracts.IntegrationEvents;
 using ArticleReportService.Infra.Configs;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using System.Text.Json;
 
 namespace ArticleCreatedWorkersConsumer;
 
@@ -10,11 +12,15 @@ public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
     private readonly RabbitMqConfiguration _rabbitMqConfiguration;
+    private readonly IIntegrationEventDispatcher _integrationEventDispatcher;
+
     public Worker(ILogger<Worker> logger,
-        IOptions<RabbitMqConfiguration> options)
+        IOptions<RabbitMqConfiguration> options,
+        IIntegrationEventDispatcher integrationEventDispatcher)
     {
         _logger = logger;
         _rabbitMqConfiguration = options.Value;
+        _integrationEventDispatcher = integrationEventDispatcher;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -29,35 +35,42 @@ public class Worker : BackgroundService
         using var _connection = await factory.CreateConnectionAsync(stoppingToken);
         using var _channel = await _connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
-        await _channel.QueueDeclareAsync(queue: "ArticleCreatedDomainEvent", exclusive: false, durable: true, autoDelete: false,
+        await _channel.QueueDeclareAsync(queue: "Integration.Events", exclusive: false, durable: true, autoDelete: false,
              arguments: new Dictionary<string, object?> { { "x-queue-type", "quorum" } }, cancellationToken: stoppingToken);
 
         await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, cancellationToken: stoppingToken);
 
-        while (!stoppingToken.IsCancellationRequested)
+        var consumer = new AsyncEventingBasicConsumer(_channel);
+
+        consumer.ReceivedAsync += async (model, ea) =>
         {
-
-            var consumer = new AsyncEventingBasicConsumer(_channel);
-
-            consumer.ReceivedAsync += async (model, ea) => 
+            try
             {
-                try
-                {
-                    var body = ea.Body.ToArray();
-                    var message = Encoding.UTF8.GetString(body);
-                    
-                    
-                } catch (Exception)
-                {
+                var body = ea.Body.ToArray();
+                var message = Encoding.UTF8.GetString(body);
 
+                var jsonResponse = JsonSerializer.Deserialize<IIntegrationEvent>(message);
+                if (jsonResponse == null)
+                {
+                    return;
                 }
-            };
 
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                await _integrationEventDispatcher.DispatchAsync(jsonResponse);
+
+                await _channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
             }
-            await Task.Delay(1000, stoppingToken);
+            catch (Exception)
+            {
+
+            }
+        };
+
+        await _channel.BasicConsumeAsync(queue: "Integration.Events", autoAck: false, consumer, stoppingToken);
+
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
         }
+        await Task.Delay(5000, stoppingToken);
     }
 }

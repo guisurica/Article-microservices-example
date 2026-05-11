@@ -2,5 +2,5 @@
 
 public interface IIntegrationEventDispatcher
 {
-    Task DispatchAsync(IIntegrationEvent integrationEvent;
+    Task DispatchAsync(IIntegrationEvent integrationEvent);
 }
